@@ -17,7 +17,20 @@ def main():
 
     input_file_path = sys.argv[1]
     output_file_path = sys.argv[2]
-    people = _get_people(input_file_path)
+    
+    # Read in input file and get a list of people and their preferences
+    people = []
+    with open(input_file_path) as f:
+        csvreader = csv.reader(f)
+        next(csvreader)
+        for row in csvreader:
+            name = row[1]
+            pref_list = row[2:8]
+            costs = {}
+            for i, pref in enumerate(pref_list):
+                costs[DAY_NAMES[i]] = _preference_cost(pref)
+            person = Person(name, costs)
+            people.append(person)
 
     # Create a cost matrix
     # Each row represents a person
@@ -37,9 +50,8 @@ def main():
     # Find total cost
     cost = cost_matrix[optimal_assignments[0], optimal_assignments[1]].sum()
 
-    # Interpret assignments
+    # Interpret and output assignments to CSV
     optimal_assignments = zip(optimal_assignments[0], optimal_assignments[1])
-
     with open(output_file_path, "w+") as f:
         csvwriter = csv.writer(f)
         csvwriter.writerow(["Name", "Assignment", "Cost"])
@@ -47,23 +59,6 @@ def main():
             person = people[person_index]
             day = DAY_NAMES[int(day_index / 5)]
             csvwriter.writerow([person.name, day, person.costs[day]])
-
-
-def _get_people(file_path):
-    people = []
-    with open(file_path) as f:
-        csvreader = csv.reader(f)
-        next(csvreader)
-        for row in csvreader:
-            name = row[1]
-            pref_list = row[2:8]
-            costs = {}
-            for i, pref in enumerate(pref_list):
-                costs[DAY_NAMES[i]] = _preference_cost(pref)
-            person = Person(name, costs)
-            people.append(person)
-
-    return people
 
 
 def _preference_cost(pref):
