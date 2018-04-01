@@ -1,6 +1,5 @@
 import sys
 import csv
-from datetime import datetime
 
 from scipy.optimize import linear_sum_assignment
 import numpy as np
@@ -17,7 +16,7 @@ def main():
 
     input_file_path = sys.argv[1]
     output_file_path = sys.argv[2]
-    
+
     # Read in input file and get a list of people and their preferences
     people = []
     with open(input_file_path) as f:
