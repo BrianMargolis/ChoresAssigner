@@ -16,7 +16,7 @@ def main():
 
     input_file_path = sys.argv[1]
     output_file_path = sys.argv[2]
-
+    
     # Read in input file and get a list of people and their preferences
     people = []
     with open(input_file_path) as f:
@@ -46,11 +46,14 @@ def main():
     # Use the Hungarian algorithm to solve the assignment
     optimal_assignments = linear_sum_assignment(cost_matrix)
 
-    # Find total cost
-    cost = cost_matrix[optimal_assignments[0], optimal_assignments[1]].sum()
+    # Find total cost, not currently used for anything
+    # cost = cost_matrix[optimal_assignments[0], optimal_assignments[1]].sum()
 
-    # Interpret and output assignments to CSV
+    # Provide a more reasonable structure:
+    # list of (person index, assigned day index)
     optimal_assignments = zip(optimal_assignments[0], optimal_assignments[1])
+
+    # Output assignments to CSV
     with open(output_file_path, "w+") as f:
         csvwriter = csv.writer(f)
         csvwriter.writerow(["Name", "Assignment", "Cost"])
@@ -61,6 +64,13 @@ def main():
 
 
 def _preference_cost(pref):
+    '''
+    Translate a survey response (text) into a numerical cost. This is the subjective part of the assignment.
+
+    As far as I can tell, scipy's implementation of the Hungarian algorithm doesn't require the costs to be positive. However, it's a good choice to have your most minimally optimal response set at 0 so that your "goal" (minimal optimality * number of people) doesn't scale with number of people. One less thing to think about.
+
+    Future versions of this function should read in from a CSV file to expose an interface for setting the responses and values.
+    '''
     if pref == "I don't like this day, but can do it as a last resort.":
         return 100
     elif pref == "This day is okay for me.":
