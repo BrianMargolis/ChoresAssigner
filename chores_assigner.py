@@ -1,13 +1,7 @@
 import sys
 import csv
 
-from scipy.optimize import linear_sum_assignment
-import numpy as np
-
-DAY_NAMES = ["monday", "tuesday", "wednesday",
-             "thursday", "friday", "saturday"]
-MAX_PEOPLE_PER_DAY = 5
-
+from assigners import ChoresAssigner
 
 def main():
     if len(sys.argv) < 3:
@@ -16,6 +10,8 @@ def main():
 
     input_file_path = sys.argv[1]
     output_file_path = sys.argv[2]
+    DAY_NAMES = ["monday", "tuesday", "wednesday", "thursday", "friday", "saturday"]
+    MAX_PEOPLE_PER_DAY = 4
     
     # Read in input file and get a list of people and their preferences
     people = []
@@ -31,37 +27,27 @@ def main():
             person = Person(name, costs)
             people.append(person)
 
-    # Create a cost matrix
-    # Each row represents a person
-    # Each column represents a slot on that day's team
-    cost_matrix = np.zeros([len(people), MAX_PEOPLE_PER_DAY*len(DAY_NAMES)])
+    assigner = ChoresAssigner(DAY_NAMES, MAX_PEOPLE_PER_DAY)
+    optimal_assignments, cost = assigner.hungarian(people)
 
-    # Populate the cost matrix
-    for i, person in enumerate(people):
-        for j, day in enumerate(person.costs):
-            day_start = j*MAX_PEOPLE_PER_DAY
-            day_end = j*MAX_PEOPLE_PER_DAY+MAX_PEOPLE_PER_DAY
-            cost_matrix[i, day_start:day_end] = person.costs[day]
-
-    # Use the Hungarian algorithm to solve the assignment
-    optimal_assignments = linear_sum_assignment(cost_matrix)
-
-    # Find total cost, not currently used for anything
-    # cost = cost_matrix[optimal_assignments[0], optimal_assignments[1]].sum()
-
-    # Provide a more reasonable structure:
-    # list of (person index, assigned day index)
-    optimal_assignments = zip(optimal_assignments[0], optimal_assignments[1])
-
+    teams = {}
     # Output assignments to CSV
     with open(output_file_path, "w+") as f:
         csvwriter = csv.writer(f)
         csvwriter.writerow(["Name", "Assignment", "Cost"])
         for person_index, day_index in optimal_assignments:
             person = people[person_index]
-            day = DAY_NAMES[int(day_index / 5)]
+            day = DAY_NAMES[int(day_index / MAX_PEOPLE_PER_DAY)]
+            if day in teams:
+                teams[day].append(person.name)
+            else:
+                teams[day] = [person.name]
             csvwriter.writerow([person.name, day, person.costs[day]])
 
+    for day in DAY_NAMES:
+        print("{0}:".format(day))
+        for person in teams[day]:
+            print("\t{0}".format(person))
 
 def _preference_cost(pref):
     '''
@@ -81,7 +67,6 @@ def _preference_cost(pref):
         return 1000
     else:
         raise ValueError("Found invalid preference text: {0}".format(pref))
-
 
 class Person:
     name = ""
