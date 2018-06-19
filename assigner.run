@@ -1,0 +1,10 @@
+reset;
+option solver cplex;
+option log_file 'problem_3.log';
+model assigner.mod;
+data assigner.dat;
+solve;
+
+
+display decision;
+display Cost;

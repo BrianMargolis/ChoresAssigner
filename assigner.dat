@@ -1,0 +1,18 @@
+data; 
+set D := monday tuesday wednesday thursday friday saturday sunday; 
+set P := Brian_Margolis CJ Tall_Bill Hazen BROFlynn Ryan_Farley Victor_Aung Peter Tyler_Frye Mitch Bryan_Luna Robby_Gray Daniel_Bang; 
+param prefs : monday tuesday wednesday thursday friday saturday sunday := 
+Brian_Margolis 100 0 0 0 100 100 100 
+CJ 100 100 100 100 0 0 0 
+Tall_Bill 0 0 0 0 20 100 100 
+Hazen 100 0 0 0 100 20 20 
+BROFlynn 0 0 1000 100 100 100 20 
+Ryan_Farley 0 0 0 0 0 100 100 
+Victor_Aung 20 20 20 20 0 20 20 
+Peter 100 100 20 20 20 0 0 
+Tyler_Frye 100 0 0 0 1000 100 100 
+Mitch 0 0 0 0 1000 1000 100 
+Bryan_Luna 0 0 0 0 0 100 100 
+Robby_Gray 0 0 0 0 0 0 0 
+Daniel_Bang 0 0 0 0 0 0 0 
+;
