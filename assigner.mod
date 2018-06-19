@@ -17,4 +17,5 @@ subject to ShiftsPerPerson{p in P}:
 		
 subject to PeoplePerShift{d in D}:
 	3 <=
-	sum {p in P} decision[p, d];
+	sum {p in P} decision[p, d]
+	<= 4;
